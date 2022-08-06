@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -6,6 +7,7 @@ using Umbraco.Cms.Core.Configuration.Models;
 using Umbraco.Cms.Core.Hosting;
 using Umbraco.Cms.Core.IO;
 using Umbraco.Cms.Web.Common.Attributes;
+using Umbraco.Extensions;
 
 namespace Umbraco.Cms.Web.BackOffice.Controllers;
 
@@ -14,14 +16,14 @@ public class BackOfficeAssetsController : UmbracoAuthorizedJsonController
 {
     private readonly IFileSystem _jsLibFileSystem;
 
-    public BackOfficeAssetsController(IIOHelper ioHelper, IHostingEnvironment hostingEnvironment, ILoggerFactory loggerFactory, IOptionsSnapshot<GlobalSettings> globalSettings)
+    public BackOfficeAssetsController(IIOHelper ioHelper, Umbraco.Cms.Core.Hosting.IHostingEnvironment hostingEnvironment, IWebHostEnvironment webHost, ILoggerFactory loggerFactory, IOptionsSnapshot<GlobalSettings> globalSettings)
     {
         var path = globalSettings.Value.UmbracoPath + Path.DirectorySeparatorChar + "lib";
         _jsLibFileSystem = new PhysicalFileSystem(
             ioHelper,
             hostingEnvironment,
             loggerFactory.CreateLogger<PhysicalFileSystem>(),
-            hostingEnvironment.MapPathWebRoot(path),
+            webHost.MapPathWebRoot(path),
             hostingEnvironment.ToAbsolute(path));
     }
 

@@ -16,7 +16,7 @@ public class ModelsBuilderDashboardProvider : IModelsBuilderDashboardProvider
         _hostingEnvironment = hostingEnvironment;
     }
 
-    public string GetUrl() =>
+    public string? GetUrl() =>
         _linkGenerator.GetUmbracoApiServiceBaseUrl<ModelsBuilderDashboardController>(controller =>
             controller.BuildModels(), this._hostingEnvironment.ApplicationVirtualPath);
 }

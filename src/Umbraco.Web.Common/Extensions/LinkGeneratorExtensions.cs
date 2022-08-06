@@ -13,12 +13,9 @@ namespace Umbraco.Extensions;
 
 public static class LinkGeneratorExtensions
 {
-    /// <summary>
-    ///     Return the back office url if the back office is installed
-    /// </summary>
-    public static string GetBackOfficeUrl(this LinkGenerator linkGenerator, IHostingEnvironment hostingEnvironment)
+    public static string? GetBackOfficeUrl(this LinkGenerator linkGenerator, IHostingEnvironment hostingEnvironment)
     {
-        Type backOfficeControllerType;
+        Type? backOfficeControllerType;
         try
         {
             backOfficeControllerType = Assembly.Load("Umbraco.Web.BackOffice")
@@ -34,45 +31,48 @@ public static class LinkGeneratorExtensions
                 hostingEnvironment
                     .ApplicationVirtualPath; // this would indicate that the installer is installed without the back office
         }
-        
-        return linkGenerator.GetPathByAction("Default", ControllerExtensions.GetControllerName(backOfficeControllerType), values: new { area = Cms.Core.Constants.Web.Mvc.BackOfficeApiArea });
+
+        return linkGenerator.GetPathByAction(
+            "Default",
+            ControllerExtensions.GetControllerName(backOfficeControllerType),
+            new { area = Constants.Web.Mvc.BackOfficeApiArea },
+            new PathString(hostingEnvironment.ApplicationVirtualPath));
     }
 
     /// <summary>
-    /// Return the Url for a Web Api service
+    ///     Return the Url for a Web Api service
     /// </summary>
-    /// <typeparam name="T">The <see cref="UmbracoApiControllerBase"/></typeparam>
-    public static string GetUmbracoApiService<T>(this LinkGenerator linkGenerator, string actionName,
-        string pathBase, object id = null)
+    /// <typeparam name="T">The <see cref="UmbracoApiControllerBase" /></typeparam>
+    public static string? GetUmbracoApiService<T>(this LinkGenerator linkGenerator, string actionName, string pathBase, object? id = null)
         where T : UmbracoApiControllerBase => linkGenerator.GetUmbracoControllerUrl(
-            actionName,
-            typeof(T), pathBase,
-            new Dictionary<string, object>()
-            {
-                ["id"] = id
-            });
+        actionName,
+        typeof(T),
+        pathBase,
+        new Dictionary<string, object?> { ["id"] = id });
 
-    public static string GetUmbracoApiService<T>(this LinkGenerator linkGenerator, string actionName,
-        IDictionary<string, object?> values, string pathBase)
+    public static string? GetUmbracoApiService<T>(this LinkGenerator linkGenerator, string actionName, IDictionary<string, object?>? values, string pathBase)
         where T : UmbracoApiControllerBase => linkGenerator.GetUmbracoControllerUrl(actionName, typeof(T), pathBase, values);
 
-    public static string GetUmbracoApiServiceBaseUrl<T>(this LinkGenerator linkGenerator,
-        Expression<Func<T, object?>> methodSelector, string pathBase)
+    public static string? GetUmbracoApiServiceBaseUrl<T>(
+        this LinkGenerator linkGenerator,
+        Expression<Func<T, object?>> methodSelector,
+        string pathBase)
         where T : UmbracoApiControllerBase
     {
-        var method = ExpressionHelper.GetMethodInfo(methodSelector);
+        MethodInfo? method = ExpressionHelper.GetMethodInfo(methodSelector);
         if (method == null)
         {
-            throw new MissingMethodException("Could not find the method " + methodSelector + " on type " + typeof(T) + " or the result ");
+            throw new MissingMethodException("Could not find the method " + methodSelector + " on type " + typeof(T) +
+                                             " or the result ");
         }
-        return linkGenerator.GetUmbracoApiService<T>(method.Name, pathBase).TrimEnd(method.Name);
+
+        return linkGenerator.GetUmbracoApiService<T>(method.Name, pathBase)?.TrimEnd(method.Name);
     }
 
     /// <summary>
-    /// Return the Url for an Umbraco controller
+    ///     Return the Url for an Umbraco controller
     /// </summary>
-    public static string GetUmbracoControllerUrl(this LinkGenerator linkGenerator, string actionName,
-        string controllerName, string area, string pathBase, IDictionary<string, object?> dict = null)
+    public static string? GetUmbracoControllerUrl(this LinkGenerator linkGenerator, string actionName, string controllerName, string? area, string pathBase, IDictionary<string, object?>? dict = null)
     {
         if (actionName == null)
         {
@@ -81,7 +81,9 @@ public static class LinkGeneratorExtensions
 
         if (string.IsNullOrWhiteSpace(actionName))
         {
-            throw new ArgumentException("Value can't be empty or consist only of white-space characters.", nameof(actionName));
+            throw new ArgumentException(
+                "Value can't be empty or consist only of white-space characters.",
+                nameof(actionName));
         }
 
         if (controllerName == null)
@@ -91,21 +93,23 @@ public static class LinkGeneratorExtensions
 
         if (string.IsNullOrWhiteSpace(controllerName))
         {
-            throw new ArgumentException("Value can't be empty or consist only of white-space characters.", nameof(controllerName));
+            throw new ArgumentException(
+                "Value can't be empty or consist only of white-space characters.",
+                nameof(controllerName));
         }
 
         if (dict is null)
         {
-            dict = new Dictionary<string, object>();
+            dict = new Dictionary<string, object?>();
         }
 
         if (!area.IsNullOrWhiteSpace())
         {
-            dict["area"] = area;
+            dict["area"] = area!;
         }
 
-        IDictionary<string, object> values = dict.Aggregate(
-            new ExpandoObject() as IDictionary<string, object>,
+        IDictionary<string, object?> values = dict.Aggregate(
+            new ExpandoObject() as IDictionary<string, object?>,
             (a, p) =>
             {
                 a.Add(p.Key, p.Value);
@@ -116,10 +120,9 @@ public static class LinkGeneratorExtensions
     }
 
     /// <summary>
-    /// Return the Url for an Umbraco controller
+    ///     Return the Url for an Umbraco controller
     /// </summary>
-    public static string GetUmbracoControllerUrl(this LinkGenerator linkGenerator, string actionName,
-        Type controllerType, string pathBase, IDictionary<string, object?> values = null)
+    public static string? GetUmbracoControllerUrl(this LinkGenerator linkGenerator, string actionName, Type controllerType, string pathBase, IDictionary<string, object?>? values = null)
     {
         if (actionName == null)
         {
@@ -128,7 +131,9 @@ public static class LinkGeneratorExtensions
 
         if (string.IsNullOrWhiteSpace(actionName))
         {
-            throw new ArgumentException("Value can't be empty or consist only of white-space characters.", nameof(actionName));
+            throw new ArgumentException(
+                "Value can't be empty or consist only of white-space characters.",
+                nameof(actionName));
         }
 
         if (controllerType == null)
@@ -153,21 +158,23 @@ public static class LinkGeneratorExtensions
         return linkGenerator.GetUmbracoControllerUrl(actionName, ControllerExtensions.GetControllerName(controllerType), area, pathBase, values);
     }
 
-    public static string GetUmbracoApiService<T>(this LinkGenerator linkGenerator,
-        Expression<Func<T, object?>> methodSelector, string pathBase)
+    public static string? GetUmbracoApiService<T>(
+        this LinkGenerator linkGenerator,
+        Expression<Func<T, object>> methodSelector,
+        string pathBase)
         where T : UmbracoApiController
     {
-        var method = ExpressionHelper.GetMethodInfo(methodSelector);
-        var methodParams = ExpressionHelper.GetMethodParams(methodSelector);
+        MethodInfo? method = ExpressionHelper.GetMethodInfo(methodSelector);
+        IDictionary<string, object?>? methodParams = ExpressionHelper.GetMethodParams(methodSelector);
         if (method == null)
         {
             throw new MissingMethodException(
                 $"Could not find the method {methodSelector} on type {typeof(T)} or the result ");
         }
 
-        if (methodParams.Any() == false)
+        if (methodParams?.Any() == false)
         {
-            return linkGenerator.GetUmbracoApiService<T>(method.Name, methodParams, pathBase);
+            return linkGenerator.GetUmbracoApiService<T>(method.Name, pathBase);
         }
 
         return linkGenerator.GetUmbracoApiService<T>(method.Name, methodParams, pathBase);

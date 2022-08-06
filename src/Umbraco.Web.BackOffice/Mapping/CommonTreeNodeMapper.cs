@@ -20,7 +20,7 @@ public class CommonTreeNodeMapper
     }
 
 
-    public string GetTreeNodeUrl<TController>(IContentBase source)
+    public string? GetTreeNodeUrl<TController>(IContentBase source)
         where TController : UmbracoApiController, ITreeNodeController
     {
         return _linkGenerator.GetUmbracoApiService<TController>(controller => controller.GetTreeNode(source.Key.ToString("N"), null), this._hostingEnvironment.ApplicationVirtualPath);

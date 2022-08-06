@@ -15,7 +15,7 @@ namespace Umbraco.Extensions
         /// Return the Url for a Surface Controller
         /// </summary>
         /// <typeparam name="T">The <see cref="SurfaceController"/></typeparam>
-        public static string GetUmbracoSurfaceUrl<T>(this LinkGenerator linkGenerator,
+        public static string? GetUmbracoSurfaceUrl<T>(this LinkGenerator linkGenerator,
             Expression<Func<T, object>> methodSelector, string pathBase)
             where T : SurfaceController
         {
@@ -40,7 +40,7 @@ namespace Umbraco.Extensions
         /// Return the Url for a Surface Controller
         /// </summary>
         /// <typeparam name="T">The <see cref="SurfaceController"/></typeparam>
-        public static string GetUmbracoSurfaceUrl<T>(this LinkGenerator linkGenerator, string actionName,
+        public static string? GetUmbracoSurfaceUrl<T>(this LinkGenerator linkGenerator, string actionName,
             string pathBase, object? id = null)
             where T : SurfaceController => linkGenerator.GetUmbracoControllerUrl(
                 actionName,
